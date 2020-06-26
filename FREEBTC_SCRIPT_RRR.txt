@@ -1,0 +1,59 @@
+﻿var x = '<div id="botonera" class="large-12 small-12 columns center">' +
+                '<button id="start" onclick="iniciar()" class="btn btn-primary" style="margin:0 0 10px 0; padding:3px; width:auto;">Iniciar</button>' +
+        '</div>' +
+		'<div class="large-12 small-12 columns center">' + 
+			'<input type="text" id="patron" value="RRR" style="text-align:center; height:30px;">' + 
+        '</div>' 
+$("#double_your_btc_right_section p:first").html(x);
+
+$('#double_your_btc_bet_lose').unbind();
+$('#double_your_btc_bet_win').unbind();
+var jugadas; var patron;
+var hacerParada = false; var balanceInicial; var balanceActual;
+function iniciar(){
+	//debugger;
+	patron=$("#patron").val();
+    hacerParada=false;
+   $("#botonera").html('<button id="start" onclick="parar()" class="btn btn-warning style="margin:0 0 10px 0; padding:3px; width:auto;">Parar</button>');
+    jugadas = "";
+    $('#double_your_btc_stake').val('0.00000001');
+    $("#double_your_btc_bet_hi_button").trigger("click"); 
+    balanceInicial = ( parseInt(parseFloat ( $("#balance").html() ) * 100000000) );
+}
+
+function parar(){
+    hacerParada = true;
+    $("#botonera").html('<button id="start" onclick="iniciar()" class="class="btn btn-primary" style="margin:0 0 10px 0; padding:3px; width:auto;">Iniciar</button>');
+    //$('#double_your_btc_bet_lose').unbind();
+    //$('#double_your_btc_bet_win').unbind();
+}
+
+$('#double_your_btc_bet_lose').bind("DOMSubtreeModified",function(e){
+    //debugger;
+    if (hacerParada) return;
+	if( $(event.currentTarget).is(':contains("lose")') ){ 
+		validarPatron("R");
+	}
+    
+});
+
+function validarPatron(resultado){
+	jugadas+= resultado;
+	var valor = jugadas.substr(jugadas.length - patron.length);
+	if (valor==patron){
+		 parar();
+		 balanceActual =  (parseInt(parseFloat ($("#balance").html())*100000000));
+		 var inversion = balanceActual-balanceInicial;
+		 alert("Patrón encontrado: " + valor + "\nInversión:" + inversion + " satoshis" );
+	}else{
+		$("#double_your_btc_bet_hi_button").trigger("click");        
+	}
+}
+
+$('#double_your_btc_bet_win').bind("DOMSubtreeModified",function(e){
+    //debugger;
+    if (hacerParada) return;
+    if( $(event.currentTarget).is(':contains("win")') ){ 
+		validarPatron("V");
+	}
+});
